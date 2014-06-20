@@ -1,14 +1,14 @@
 ## ####################################################################################
 ##
 ## makeCacheMatrix:
-## has 2 pairs of getter / setter functions which are returned to the caller
-## the get/set function pair for the original matrix and 
-## the 
+## it has 2 pairs of getter / setter functions which are returned to the caller
+## the get/set function pair for the original matrix (set and get)
+## and the get/set function pair for the inverse matrix (setInverse/getInverse)
 ## 
 ## ####################################################################################
 makeCacheMatrix <- function(p_Matrix = matrix()) {
   
-  m_invereMatrix <- NULL # local member variable
+  m_invereMatrix <- NULL # local member variable hence no <<- operator
   
   set <- function(p_Matrix) {
     g_Matrix <<- p_Matrix ## store the content in the global environment 
