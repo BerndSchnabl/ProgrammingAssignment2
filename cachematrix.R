@@ -1,3 +1,4 @@
+
 ## ####################################################################################
 ##
 ## makeCacheMatrix:
@@ -68,7 +69,16 @@ makeCacheMatrix <- function(p_Matrix = matrix()) {
 
 
 ## Write a short comment describing this function
-
+## ####################################################################################
+##
+## cacheSolve:
+## ===========
+## The cacheSolve functions make use of the 4 getter/setter funcitons in the
+## makeCacheMatrix function previously defined. the cacheFunction itself
+## is passed an instance of the makeCacheMatrix return value.
+## The makeCacheMatrix
+## 
+## ####################################################################################
 cacheSolve <- function(x, ...) {
   ## Return a matrix that is the inverse of 'x'
   m <- x$getmean()
@@ -81,6 +91,57 @@ cacheSolve <- function(x, ...) {
   x$setmean(m)
   m
 }
+
+## ####################################################################################
+## 
+## 
+## 
+## ####################################################################################
+testVector <- function() 
+{
+  debug(cachemean)
+  debug(makeVector)
+  
+  mv1 <- makeVector() # there is no need to pass the vector as parameter
+  mv1$set( c(1:10) )
+  class(mv1)
+  print(mv1)
+  mv1$get() ## this should return the vector again which was passed with the set function
+  
+  
+  
+  #pass the list v to the cachemean() function
+  #   the mean of the numeric vector 20:40 should be returned
+  cachemean(mv1)
+  
+  #pass the list v to the cachemean() function a second time
+  #  the mean of the numeric vector 20:40 should be returned
+  #  also a message "retrieving value from cache" indicating that the mean
+  #  is not being calculated this time but is being retrieved from the cached
+  #  value
+  cachemean(mv1)
+  
+  #use v's set function to create a new vector 
+  #  containing the numbers 23,23,34.6,654.35
+  mv1$set(c(23,23,34.6,654.35))
+  
+  #pass the list v to the cachemean() function
+  #   the mean of the numeric vector 23,23,34.6,654.35 should be returned
+  cachemean(mv1)
+  
+  #pass the list v to the cachemean() function a second time
+  #  the mean of the numeric vector 23,23,34.6,654.35 should be returned
+  #  also a message "retrieving value from cache" indicating that the mean
+  #  is not being calculated this time but is being retrieved from the cached
+  #  value
+  cachemean(mv1)
+}
+
+debug(testVector)
+t <- testVector()
+
+
+
 
 m <- matrix( c(3,4,4,8), 2, 2)
 
