@@ -97,7 +97,8 @@ cacheSolve <- function(mkcm) {
 ## ####################################################################################
 ## 
 ## testfunction
-##  
+## test cases are implemented in a fuction , so that the test funcation can
+## be passed to the debug methid: debug(testMatrix)
 ## 
 ## ####################################################################################
 testMatrix <- function() 
