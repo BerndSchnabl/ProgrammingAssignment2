@@ -45,7 +45,7 @@ makeCacheMatrix <- function(p_Matrix = matrix()) {
     g_Inverse <<- p_Inverse
   }
   getInverse <- function() {
-    return(g_inverse)
+    return(g_Inverse)
   }
   
   ## ####################################################################################
@@ -90,7 +90,7 @@ cacheSolve <- function(mkcm) {
   mat  <- mkcm$get()                ## get the original matrix
   message("calculate inverse matrix")
   inv_mat <- solve(mat)             ## no additional parameters are passed to solve
-  mkcm$setInverse(mat)              ## cache the inverse matrix
+  mkcm$setInverse(inv_mat)          ## cache the inverse matrix
   inv_mat                           ## return the inverse matrix
 }
 
@@ -103,28 +103,34 @@ cacheSolve <- function(mkcm) {
 ## ####################################################################################
 testMatrix <- function() 
 {
-  ##debug(cachInverse)
+  ##debug(cacheSolve)
   ##debug(makeCacheMatrix)
   
   mat1 <- matrix( rnorm(900), 30, 30 )                 ## can be inversed since |mat1|<>0 & nrow=ncol
   mcm1 <- makeCacheMatrix()                            ## there is no need to pass a mat1 as parameter
-  mkm1$set( mat1 )                                     ## store the matrix
+  mcm1$set( mat1 )                                     ## store the matrix
 
   mat2 <- mcm1$get()                                   ## get it back
-  if (mat1 <> mat2) message("error: matrix changed")   ##  this should return the vector again which was passed 
+  if (identical(mat1,mat2) == FALSE)                   ## test if returned matrix is the same as the original
+      message("error: matrix changed")                 ##  this should return the vector again which was passed 
   
-  imat1 <- cacheInverse(mcm1)                          ## get the inverse matrix (this time calculated)
-  imat2 <- cacheInverse(mcm1)                          ## return again this time from cache
+  imat1 <- cacheSolve(mcm1)                            ## get the inverse matrix (this time calculated)
+  imat2 <- cacheSolve(mcm1)                            ## return again this time from cache
+
+  if (identical(imat1,imat2) == FALSE)                 ## test if both inverse matrixes are the same
+    message("error: inverse matrix changed")           ## this should return the vector again which was passed 
   
 }
 
 ## ####################################################################################
 ##
-## main
+## main:
+## debug test function
 ##
 ## ####################################################################################
-debug(testMatrix)
+##debug(testMatrix)
 testMatrix()
+
 
 
 
