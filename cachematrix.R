@@ -16,7 +16,13 @@ makeCacheMatrix <- function(p_Matrix = matrix()) {
   
   ## ####################################################################################
   ##
-  ##
+  ## matix getter and setter function pair
+  ## these 2 functions are used to access the Matrix stored in the global
+  ## environment. When the matrix is set with a new value, the inverse
+  ## version is deleted since it would not match the set one.
+  ## the 'cacheSolve' function is testing this variable for NULL to determine
+  ## if a cached version of the inversed variable is already stored or if the 
+  ## time consuming task has to be performned
   ##
   ## ####################################################################################
   set <- function(p_Matrix) {
@@ -24,29 +30,20 @@ makeCacheMatrix <- function(p_Matrix = matrix()) {
     g_Inverse <<- NULL ## reset global inverse martix since it is not yet computed
   }
   
-  ## ####################################################################################
-  ##
-  ##
-  ##
-  ## ####################################################################################
-  get <- function() {
+ get <- function() {
     g_Matrix ## this is the vector from the global environment
   }
   
   ## ####################################################################################
   ##
-  ##
+  ## the inverse getter/setter pair functions provide access to the cached version
+  ## of the matrix by the cacheSolve function. these 2 functions are passed in the 
+  ## list object 'return_list' to the caller of the function 'makeCacheMatrix'.
   ##
   ## ####################################################################################
   setInverse <- function(p_Inverse) {
     g_Inverse <<- p_Inverse
   }
-  
-  ## ####################################################################################
-  ##
-  ##
-  ##
-  ## ####################################################################################
   getInverse <- function() {
     return(g_inverse)
   }
@@ -67,83 +64,66 @@ makeCacheMatrix <- function(p_Matrix = matrix()) {
   
 }
 
-
-## Write a short comment describing this function
 ## ####################################################################################
 ##
-## cacheSolve:
+## cacheSolve:   Return a matrix that is the inverse of 'mkcm'
 ## ===========
 ## The cacheSolve functions make use of the 4 getter/setter funcitons in the
 ## makeCacheMatrix function previously defined. the cacheFunction itself
 ## is passed an instance of the makeCacheMatrix return value.
-## The makeCacheMatrix
-## 
+## The makeCacheMatrix returns a list which in turn is passed to the 
+## cache solve function to access the stored version of the inverse matrix
+## Tha parameter which is passed to the cacheSolve function is the return value 
+## of the makeCacheMatrix function and hence it is called mkcm 
+## this parameter is a list of the 4 access functions from the makeCacheMatrix function.
+## these functions allow the 'cacheSolve' function set and get access to the matrix
+## and the inverse version of the matrix. 
+##
 ## ####################################################################################
-cacheSolve <- function(x, ...) {
-  ## Return a matrix that is the inverse of 'x'
-  m <- x$getmean()
-  if(!is.null(m)) {
-    message("getting cached data")
-    return(m)
+cacheSolve <- function(mkcm) {
+  
+  inv_mat <- mkcm$getInverse()      ## use makeCacheMatrix functions to access the inverse matrix 
+  if(!is.null(inv_mat)) {           ## yes there is a cached version of the inverse matrix
+    message("getting cached data") 
+    return(inv_mat)                 ## pass the cached inverse matrix to the caller
   }
-  data <- x$get()
-  m <- mean(data, ...)
-  x$setmean(m)
-  m
+  mat  <- mkcm$get()                ## get the original matrix
+  message("calculate inverse matrix")
+  inv_mat <- solve(mat)             ## no additional parameters are passed to solve
+  mkcm$setInverse(mat)              ## cache the inverse matrix
+  inv_mat                           ## return the inverse matrix
 }
 
 ## ####################################################################################
 ## 
-## 
+## testfunction
+##  
 ## 
 ## ####################################################################################
-testVector <- function() 
+testMatrix <- function() 
 {
-  debug(cachemean)
-  debug(makeVector)
+  ##debug(cachInverse)
+  ##debug(makeCacheMatrix)
   
-  mv1 <- makeVector() # there is no need to pass the vector as parameter
-  mv1$set( c(1:10) )
-  class(mv1)
-  print(mv1)
-  mv1$get() ## this should return the vector again which was passed with the set function
+  mat1 <- matrix( rnorm(900), 30, 30 )                 ## can be inversed since |mat1|<>0 & nrow=ncol
+  mcm1 <- makeCacheMatrix()                            ## there is no need to pass a mat1 as parameter
+  mkm1$set( mat1 )                                     ## store the matrix
+
+  mat2 <- mcm1$get()                                   ## get it back
+  if (mat1 <> mat2) message("error: matrix changed")   ##  this should return the vector again which was passed 
   
+  imat1 <- cacheInverse(mcm1)                          ## get the inverse matrix (this time calculated)
+  imat2 <- cacheInverse(mcm1)                          ## return again this time from cache
   
-  
-  #pass the list v to the cachemean() function
-  #   the mean of the numeric vector 20:40 should be returned
-  cachemean(mv1)
-  
-  #pass the list v to the cachemean() function a second time
-  #  the mean of the numeric vector 20:40 should be returned
-  #  also a message "retrieving value from cache" indicating that the mean
-  #  is not being calculated this time but is being retrieved from the cached
-  #  value
-  cachemean(mv1)
-  
-  #use v's set function to create a new vector 
-  #  containing the numbers 23,23,34.6,654.35
-  mv1$set(c(23,23,34.6,654.35))
-  
-  #pass the list v to the cachemean() function
-  #   the mean of the numeric vector 23,23,34.6,654.35 should be returned
-  cachemean(mv1)
-  
-  #pass the list v to the cachemean() function a second time
-  #  the mean of the numeric vector 23,23,34.6,654.35 should be returned
-  #  also a message "retrieving value from cache" indicating that the mean
-  #  is not being calculated this time but is being retrieved from the cached
-  #  value
-  cachemean(mv1)
 }
 
-debug(testVector)
-t <- testVector()
+## ####################################################################################
+##
+## main
+##
+## ####################################################################################
+debug(testMatrix)
+testMatrix()
 
 
 
-
-m <- matrix( c(3,4,4,8), 2, 2)
-
-makeCacheMatrix(m)
-m1 <- cacheSolve
